@@ -1,0 +1,14 @@
+{
+	"entry": [{
+		"messaging": [{
+			"sender": "id",
+			"message": {
+				"text": "hihi"
+			},
+			"postback": {
+				"type": "button",
+				"payload": "AGR"
+			}
+		}]
+	}]
+}
