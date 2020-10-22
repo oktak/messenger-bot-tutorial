@@ -9,7 +9,7 @@ app.set('port', (process.env.PORT || 5000))
 
 // parse application/x-www-form-urlencoded
 app.use(bodyParser.urlencoded({
-    extended: false
+  extended: false
 }))
 
 // parse application/json
@@ -17,12 +17,11 @@ app.use(bodyParser.json())
 
 // index
 app.get('/', function (req, res) {
-    res.send('hello world i am a secret bot')
+  res.send('hello world i am a secret bot')
 })
 
 app.get('/privacy', function (req, res) {
-
-    res.send(`
+  res.send(`
     Privacy Policy of AI chat.
 
     AI chat. operates the Website Name website, which provides the SERVICE.
@@ -75,295 +74,263 @@ app.get('/privacy', function (req, res) {
 
 // for facebook verification
 app.get('/webhook/', function (req, res) {
-    if (req.query['hub.verify_token'] === 'my_voice_is_my_password_verify_me') {
-        res.send(req.query['hub.challenge'])
-    } else {
-        res.send('Error, wrong token')
-    }
+  if (req.query['hub.verify_token'] === 'my_voice_is_my_password_verify_me') {
+    res.send(req.query['hub.challenge'])
+  } else {
+    res.send('Error, wrong token')
+  }
 })
-
-
 
 // recommended to inject access tokens as environmental variables, e.g.
 const token = process.env.FB_PAGE_ACCESS_TOKEN
 
-
-function sendTextMessage(sender, text) {
-    let messageData = {
-        text: text
+function sendTextMessage (sender, text) {
+  const messageData = {
+    text: text
+  }
+  request({
+    url: 'https://graph.facebook.com/v2.6/me/messages',
+    qs: {
+      access_token: token
+    },
+    method: 'POST',
+    json: {
+      recipient: {
+        id: sender
+      },
+      message: messageData
     }
-    request({
-        url: 'https://graph.facebook.com/v2.6/me/messages',
-        qs: {
-            access_token: token
-        },
-        method: 'POST',
-        json: {
-            recipient: {
-                id: sender
-            },
-            message: messageData,
-        }
-    }, function (error, response, body) {
-        if (error) {
-            console.log('Error sending messages: ', error)
-        } else if (response.body.error) {
-            console.log('Error: ', response.body.error)
-        }
-    })
+  }, function (error, response, body) {
+    if (error) {
+      console.log('Error sending messages: ', error)
+    } else if (response.body.error) {
+      console.log('Error: ', response.body.error)
+    }
+  })
 }
 
 // spin spin sugar
 app.listen(app.get('port'), function () {
-    console.log('running on port', app.get('port'))
+  console.log('running on port', app.get('port'))
 })
 
-
-
-
-
-
-
-function sendMessage(sender) {
-    let messageData = {
-        "attachment": {
-            "type": "template",
-            "payload": {
-                "template_type": "generic",
-                "elements": [{
-                    "title": "First card",
-                    "subtitle": "Element #1 of an hscroll",
-                    "image_url": "http://messengerdemo.parseapp.com/img/rift.png",
-                    "buttons": [{
-                        "type": "web_url",
-                        "url": "https://www.messenger.com",
-                        "title": "web url"
-                    }, {
-                        "type": "postback",
-                        "title": "Postback",
-                        "payload": "abc",
-                    }],
-                }, {
-                    "title": "Second card",
-                    "subtitle": "Element #2 of an hscroll",
-                    "image_url": "http://messengerdemo.parseapp.com/img/gearvr.png",
-                    "buttons": [{
-                        "type": "postback",
-                        "title": "Postback",
-                        "payload": "abc",
-                    }],
-                }]
-            }
-        }
+function sendMessage (sender) {
+  const messageData = {
+    attachment: {
+      type: 'template',
+      payload: {
+        template_type: 'generic',
+        elements: [{
+          title: 'First card',
+          subtitle: 'Element #1 of an hscroll',
+          image_url: 'http://messengerdemo.parseapp.com/img/rift.png',
+          buttons: [{
+            type: 'web_url',
+            url: 'https://www.messenger.com',
+            title: 'web url'
+          }, {
+            type: 'postback',
+            title: 'Postback',
+            payload: 'abc'
+          }]
+        }, {
+          title: 'Second card',
+          subtitle: 'Element #2 of an hscroll',
+          image_url: 'http://messengerdemo.parseapp.com/img/gearvr.png',
+          buttons: [{
+            type: 'postback',
+            title: 'Postback',
+            payload: 'abc'
+          }]
+        }]
+      }
     }
-    request({
-        url: 'https://graph.facebook.com/v2.6/me/messages',
-        qs: {
-            access_token: token
-        },
-        method: 'POST',
-        json: {
-            recipient: {
-                id: sender
-            },
-            message: messageData,
-        }
-    }, function (error, response, body) {
-        if (error) {
-            console.log('Error sending messages: ', error)
-        } else if (response.body.error) {
-            console.log('Error: ', response.body.error)
-        }
-    })
+  }
+  request({
+    url: 'https://graph.facebook.com/v2.6/me/messages',
+    qs: {
+      access_token: token
+    },
+    method: 'POST',
+    json: {
+      recipient: {
+        id: sender
+      },
+      message: messageData
+    }
+  }, function (error, response, body) {
+    if (error) {
+      console.log('Error sending messages: ', error)
+    } else if (response.body.error) {
+      console.log('Error: ', response.body.error)
+    }
+  })
 }
 
+function sendGreetMessage (sender) {
+  const messageData = {
+    attachment: {
+      type: 'template',
+      payload: {
+        template_type: 'generic',
+        elements: [{
+          title: '你想查詢以下邊一個範疇嘅資助計劃？',
+          subtitle: '企業支援計劃詳情:',
+          buttons: [{
+            type: 'postback',
+            title: '科技研發',
+            payload: 'AGR'
 
+          }, {
+            type: 'postback',
+            title: '醫療',
+            payload: 'AGR'
+          }, {
+            type: 'postback',
+            title: '融資及信貸保證',
+            payload: 'AGR'
 
+          }]
+        }, {
+          title: '你想查詢以下邊一個範疇嘅資助計劃？y',
+          subtitle: '企業支援計劃詳情:',
+          buttons: [{
+            type: 'postback',
+            title: '創意產業',
+            payload: '以下係同創意產業有關嘅支援計劃： \n創意智優計劃 > http://bit.ly/2Ot3P0N \n你亦都可以點擊呢度 > http://bit.ly/399B5C0 瀏覽中小企一站通網站，以獲取其他資助計劃嘅詳情。\n初創業務\n以下係對初創企業嘅相關支援同培育計劃。'
 
-
-
-
-
-function sendGreetMessage(sender) {
-
-    let messageData = {
-        "attachment": {
-            "type": "template",
-            "payload": {
-                "template_type": "generic",
-                "elements": [{
-                    "title": "你想查詢以下邊一個範疇嘅資助計劃？",
-                    "subtitle": "企業支援計劃詳情:",
-                    "buttons": [{
-                        "type": "postback",
-                        "title": "科技研發",
-                        "payload": "AGR",
-
-                    }, {
-                        "type": "postback",
-                        "title": "醫療",
-                        "payload": "AGR",
-                    }, {
-                        "type": "postback",
-                        "title": "融資及信貸保證",
-                        "payload": "AGR",
-
-                    }],
-                }, {
-                    "title": "你想查詢以下邊一個範疇嘅資助計劃？y",
-                    "subtitle": "企業支援計劃詳情:",
-                    "buttons": [{
-                        "type": "postback",
-                        "title": "創意產業",
-                        "payload": "以下係同創意產業有關嘅支援計劃： \n創意智優計劃 > http://bit.ly/2Ot3P0N \n你亦都可以點擊呢度 > http://bit.ly/399B5C0 瀏覽中小企一站通網站，以獲取其他資助計劃嘅詳情。\n初創業務\n以下係對初創企業嘅相關支援同培育計劃。",
-
-                    }],
-                }]
-            }
-        }
+          }]
+        }]
+      }
     }
+  }
 
-
-
-    request({
-        url: 'https://graph.facebook.com/v2.6/me/messages',
-        qs: {
-            access_token: token
-        },
-        method: 'POST',
-        json: {
-            recipient: {
-                id: sender
-            },
-            message: messageData,
-        }
-    }, function (error, response, body) {
-        if (error) {
-            console.log('Error sending messages: ', error)
-        } else if (response.body.error) {
-            console.log('Error: ', response.body.error)
-        }
-    })
+  request({
+    url: 'https://graph.facebook.com/v2.6/me/messages',
+    qs: {
+      access_token: token
+    },
+    method: 'POST',
+    json: {
+      recipient: {
+        id: sender
+      },
+      message: messageData
+    }
+  }, function (error, response, body) {
+    if (error) {
+      console.log('Error sending messages: ', error)
+    } else if (response.body.error) {
+      console.log('Error: ', response.body.error)
+    }
+  })
 }
 
+function sendGenericMessage (sender) {
+  const messageData = {
+    attachment: {
+      type: 'template',
+      payload: {
+        template_type: 'generic',
+        elements: [{
+          title: '你想查詢以下邊一個範疇嘅資助計劃？',
+          subtitle: '企業支援計劃詳情:',
+          buttons: [{
+            type: 'postback',
+            title: '科技研發',
+            payload: '科技研發:\n以下係同研發相關嘅資助項目：\n企業支援計劃 > http://bit.ly/371gZZa\n一般支援計劃 > http://bit.ly/31pSzHI\n實習研究員計劃 > http://bit.ly/399pe75\n 粵港科技合作資助計劃 > http://bit.ly/2OtYdn7\n 創科創投基金 > http://bit.ly/31syDUy\n院校中游研發計劃 > http://bit.ly/380cYWp\n  專利申請資助計劃 > http://bit.ly/2SmnZL1\n 博士專才庫 > http://bit.ly/380ys5s\n 公營機構試用計劃 > http://bit.ly/2UooiHI\n 投資研發現金回贈計劃 > http://bit.ly/2UmxWuF\n   大學科技初創企業資助計劃 > http://bit.ly/381mGrB\n  再工業化及科技培訓計劃 > http://bit.ly/31vYWt1\n 科技券 > http://bit.ly/2umLlYR\n\n如果你想查詢其他資助計劃嘅詳情，可以點擊呢度 > http://bit.ly/39alana 瀏覽中小企一站通網站。'
 
+          }, {
+            type: 'postback',
+            title: '醫療',
+            payload: '醫療\n中醫藥發展基金已經接受申請啦，詳情可以點擊呢度 > http://bit.ly/39albYg 進行瀏覽\n如果你想查詢其他資助計劃嘅詳情，可以點擊呢度 > http://bit.ly/399B5C0 瀏覽中小企一站通網站。'
+          }, {
+            type: 'postback',
+            title: '融資及信貸保證',
+            payload: '以下係同融資同信貸保證相關嘅計劃：\n出口信用保險 > http://bit.ly/2Ut0na3 \n小型貸款計劃 > http://bit.ly/2Ut5QOe \n中小企融資擔保計劃 > http://bit.ly/2uobK8P \n中小企業信貸保證計劃 > http://bit.ly/2S1iVg9 \n如果你想查詢其他資助計劃嘅詳情，可以點擊呢度 > http://bit.ly/39alana 瀏覽中小企一站通網站。'
 
-function sendGenericMessage(sender) {
+          }]
+        }, {
+          title: '你想查詢以下邊一個範疇嘅資助計劃？y',
+          subtitle: '企業支援計劃詳情:',
+          buttons: [{
+            type: 'postback',
+            title: '創意產業',
+            payload: '以下係同創意產業有關嘅支援計劃： \n創意智優計劃 > http://bit.ly/2Ot3P0N \n你亦都可以點擊呢度 > http://bit.ly/399B5C0 瀏覽中小企一站通網站，以獲取其他資助計劃嘅詳情。\n初創業務\n以下係對初創企業嘅相關支援同培育計劃。'
 
-    let messageData = {
-        "attachment": {
-            "type": "template",
-            "payload": {
-                "template_type": "generic",
-                "elements": [{
-                    "title": "你想查詢以下邊一個範疇嘅資助計劃？",
-                    "subtitle": "企業支援計劃詳情:",
-                    "buttons": [{
-                        "type": "postback",
-                        "title": "科技研發",
-                        "payload": "科技研發:\n以下係同研發相關嘅資助項目：\n企業支援計劃 > http://bit.ly/371gZZa\n一般支援計劃 > http://bit.ly/31pSzHI\n實習研究員計劃 > http://bit.ly/399pe75\n 粵港科技合作資助計劃 > http://bit.ly/2OtYdn7\n 創科創投基金 > http://bit.ly/31syDUy\n院校中游研發計劃 > http://bit.ly/380cYWp\n  專利申請資助計劃 > http://bit.ly/2SmnZL1\n 博士專才庫 > http://bit.ly/380ys5s\n 公營機構試用計劃 > http://bit.ly/2UooiHI\n 投資研發現金回贈計劃 > http://bit.ly/2UmxWuF\n   大學科技初創企業資助計劃 > http://bit.ly/381mGrB\n  再工業化及科技培訓計劃 > http://bit.ly/31vYWt1\n 科技券 > http://bit.ly/2umLlYR\n\n如果你想查詢其他資助計劃嘅詳情，可以點擊呢度 > http://bit.ly/39alana 瀏覽中小企一站通網站。",
-
-                    }, {
-                        "type": "postback",
-                        "title": "醫療",
-                        "payload": "醫療\n中醫藥發展基金已經接受申請啦，詳情可以點擊呢度 > http://bit.ly/39albYg 進行瀏覽\n如果你想查詢其他資助計劃嘅詳情，可以點擊呢度 > http://bit.ly/399B5C0 瀏覽中小企一站通網站。",
-                    }, {
-                        "type": "postback",
-                        "title": "融資及信貸保證",
-                        "payload": "以下係同融資同信貸保證相關嘅計劃：\n出口信用保險 > http://bit.ly/2Ut0na3 \n小型貸款計劃 > http://bit.ly/2Ut5QOe \n中小企融資擔保計劃 > http://bit.ly/2uobK8P \n中小企業信貸保證計劃 > http://bit.ly/2S1iVg9 \n如果你想查詢其他資助計劃嘅詳情，可以點擊呢度 > http://bit.ly/39alana 瀏覽中小企一站通網站。",
-
-                    }],
-                }, {
-                    "title": "你想查詢以下邊一個範疇嘅資助計劃？y",
-                    "subtitle": "企業支援計劃詳情:",
-                    "buttons": [{
-                        "type": "postback",
-                        "title": "創意產業",
-                        "payload": "以下係同創意產業有關嘅支援計劃： \n創意智優計劃 > http://bit.ly/2Ot3P0N \n你亦都可以點擊呢度 > http://bit.ly/399B5C0 瀏覽中小企一站通網站，以獲取其他資助計劃嘅詳情。\n初創業務\n以下係對初創企業嘅相關支援同培育計劃。",
-
-                    }],
-                }]
-            }
-        }
+          }]
+        }]
+      }
     }
+  }
 
-
-
-    request({
-        url: 'https://graph.facebook.com/v2.6/me/messages',
-        qs: {
-            access_token: token
-        },
-        method: 'POST',
-        json: {
-            recipient: {
-                id: sender
-            },
-            message: messageData,
-        }
-    }, function (error, response, body) {
-        if (error) {
-            console.log('Error sending messages: ', error)
-        } else if (response.body.error) {
-            console.log('Error: ', response.body.error)
-        }
-    })
+  request({
+    url: 'https://graph.facebook.com/v2.6/me/messages',
+    qs: {
+      access_token: token
+    },
+    method: 'POST',
+    json: {
+      recipient: {
+        id: sender
+      },
+      message: messageData
+    }
+  }, function (error, response, body) {
+    if (error) {
+      console.log('Error sending messages: ', error)
+    } else if (response.body.error) {
+      console.log('Error: ', response.body.error)
+    }
+  })
 }
-
-
-
-
-
-
 
 app.post('/webhook/', function (req, res) {
-    // req 是 Facebook visit /webhook/ 帶住的 object, 裡面有很多資訊, 我們要選擇有用的來用
-    // Reference:
-    // "Event Format" https://developers.facebook.com/docs/messenger-platform/webhook/
+  // req 是 Facebook visit /webhook/ 帶住的 object, 裡面有很多資訊, 我們要選擇有用的來用
+  // Reference:
+  // "Event Format" https://developers.facebook.com/docs/messenger-platform/webhook/
 
-    // req.body.entry[0] 表示只取第一個 entry
-    let messaging_events = req.body.entry[0].messaging;
+  // req.body.entry[0] 表示只取第一個 entry
+  const messagingEvents = req.body.entry[0].messaging
 
-    for (let i = 0; i < messaging_events.length; i++) {
-        // for-loop 入面處理每個 message event object, 因為 messaging_events 入面可能有好多個 message event object
-        let event = req.body.entry[0].messaging[i];
-        let sender = event.sender.id;
+  for (let i = 0; i < messagingEvents.length; i++) {
+    // for-loop 入面處理每個 message event object, 因為 messagingEvents 入面可能有好多個 message event object
+    const event = req.body.entry[0].messaging[i]
+    const sender = event.sender.id
 
+    // Part 1: 檢查 message event object 係唔係有 文字 message
+    if (event.message && event.message.text) {
+      const text = event.message.text
 
-        // Part 1: 檢查 message event object 係唔係有 文字 message
-        if (event.message && event.message.text) {
-            let text = event.message.text;
-
-            if (text === 'start') {
-                // Bot 向 user 展示 First Card, Second Card
-                sendMessage(sender);
-            } else {
-                // Echo 返 user 打咩字(最多 200 character)
-                sendTextMessage(sender, text.substring(0, 200), token);
-            }
-        }
-
-
-        // Part 2: 檢查 message event object 係唔係有 postback
-        if (event.postback) {
-            let valid = event.postback.payload;
-
-            if (valid === 'get_started') {
-                // 由從未對展開對話, user 按 "Get Started" 之後, Facebook 會 visit /webhook/
-                sendGreetMessage(sender);
-            } else if (valid === 'abc') {
-                // 當 Bot 展示 First Card, Second Card, user 按了 postback
-                sendGenericMessage(sender);
-            } else if (valid === 'AGR') {
-                // 當 Bot 展示 GreetMessage 後, 按了 科技研發 或 醫療 或 融資及信貸保證
-                sendTextMessage(sender, "按了 科技研發 / 醫療 / 融資及信貸保證", token);
-            } else {
-                // 其他有 postback 的情況
-                sendTextMessage(sender, "其他有 postback 的情況", token);
-            }
-        }
+      if (text === 'start') {
+        // Bot 向 user 展示 First Card, Second Card
+        sendMessage(sender)
+      } else {
+        // Echo 返 user 打咩字(最多 200 character)
+        sendTextMessage(sender, text.substring(0, 200), token)
+      }
     }
 
-    // Facebook 要求，Facebook visit /webhook/ 都要收到由 Bot 傳回 HTTP Response Status 200
-    res.sendStatus(200);
+    // Part 2: 檢查 message event object 係唔係有 postback
+    if (event.postback) {
+      const valid = event.postback.payload
+
+      if (valid === 'get_started') {
+        // 由從未對展開對話, user 按 "Get Started" 之後, Facebook 會 visit /webhook/
+        sendGreetMessage(sender)
+      } else if (valid === 'abc') {
+        // 當 Bot 展示 First Card, Second Card, user 按了 postback
+        sendGenericMessage(sender)
+      } else if (valid === 'AGR') {
+        // 當 Bot 展示 GreetMessage 後, 按了 科技研發 或 醫療 或 融資及信貸保證
+        sendTextMessage(sender, '按了 科技研發 / 醫療 / 融資及信貸保證', token)
+      } else {
+        // 其他有 postback 的情況
+        sendTextMessage(sender, '其他有 postback 的情況', token)
+      }
+    }
+  }
+
+  // Facebook 要求，Facebook visit /webhook/ 都要收到由 Bot 傳回 HTTP Response Status 200
+  res.sendStatus(200)
 })
